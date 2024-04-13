@@ -7,6 +7,8 @@ class Contact(models.Model):
     email = models.EmailField(max_length=50)
     birth = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
+    phone2 = models.CharField(max_length=15, null=True, blank=True)
+
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:

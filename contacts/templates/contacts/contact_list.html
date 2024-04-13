@@ -1,3 +1,4 @@
+
 {% extends 'contacts/base.html' %}
 {% load static %}
 
@@ -11,7 +12,7 @@
             <form action="" style="max-width: 450px;">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Buscar por nombre" name="q" value="{{ request.GET.q }}">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-outline-primary">
                         Buscar
                     </button>
                 </div>
@@ -24,42 +25,37 @@
     </div>
 
     <div class="table-responsive">
-        <table class="mt-5 table table-hover">
+        <table class="mt-5 w-100 table table-sm mx-auto table-hover">
             <thead>
-                <tr>
+                <tr class="table-primary">
                     <th>Nombres</th>
-                    <th>F. nacimiento</th>
-                    <th>Celular</th>
+                    <th>Celular 1</th>
+                    <th>Celular 2</th>
+                    <th>E-mail</th>
                     <th>F. registro</th>
-                    <th></th>
+                    <th colspan="2"></th>
                 </tr>
             </thead>
-            <tbody>
-                {% for contact in object_list %}
-                <tr>
-                    <td>
-                        <div class="d-flex gap-2">
-                            {% if contact.avatar %}
-                            <img src="{{ contact.avatar.url }}" alt="" class="rounded" style="max-width: 64px;">
-                            {% endif %}
-                            <div>
-                                <div class="fw-bold">{{ contact.name }}</div>
-                                <div>{{ contact.email }}</div>  
-                            </div>
-                        </div>
-                    </td>
-                    <td>{{ contact.birth|default:'-' }}</td>
+
+            {% for contact in object_list %}
+            <tbody>              
+                <tr>                    
+                    <td class="fw-bold">{{ contact.name }}</td>
                     <td>{{ contact.phone|default:'-' }}</td>
-                    <td>{{ contact.created|date:'d/m/Y h:i A' }}</td>
+                    <td>{{ contact.phone2|default:'-' }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{{ contact.created|date:'d/m/Y h:i A' }}</td>  
+                    <td>     
+                            <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-outline-warning"><i class="fas fa-edit"></i></a>
+                    </td>
+
                     <td>
-                        <div class="btn-group btn-group-sm">
-                            <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-primary">Editar</a>
-                            <a href="{% url 'contact_delete' contact.pk %}" class="btn btn-danger">Eliminar</a>
-                        </div>
+                            <a href="{% url 'contact_delete' contact.pk %}" class="btn btn-outline-danger"><i class="fas fa-trash"></i></a>                    
                     </td>
                 </tr>
-                {% endfor %}
+                
             </tbody>
+            {% endfor %}
         </table>
     </div>
     
