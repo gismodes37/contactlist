@@ -23,14 +23,14 @@ class ContactListView(generic.ListView):
 
 class ContactCreateView(generic.CreateView):
     model = Contact
-    fields = ('avatar', 'name', 'email', 'birth', 'phone', 'phone2')
+    fields = ('name', 'email', 'phone', 'phone2')
     success_url = reverse_lazy('contact_list')
 
 
 class ContactUpdateView(generic.UpdateView):
     model = Contact
-    fields = ('avatar', 'name', 'email', 'birth', 'phone', 'phone2')
-    success_url = reverse_lazy('contact_list')
+    fields = ('name', 'email', 'phone', 'phone2')
+    Warning_url = reverse_lazy('contact_list')
 
 
 class ContactDeleteView(generic.DeleteView): 
