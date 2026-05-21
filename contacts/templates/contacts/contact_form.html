@@ -14,7 +14,13 @@
         </h3>
     </div>
 
-    <form action="" method="post" class="mt-5 mx-auto" style="max-width: 420px;" enctype="multipart/form-data" novalidate>
+    {% if contact and contact.avatar %}
+        <div class="text-center mt-3">
+            <img src="{{ contact.avatar.url }}" alt="{{ contact.name }}" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover;">
+        </div>
+    {% endif %}
+
+    <form action="" method="post" class="mt-4 mx-auto" style="max-width: 420px;" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
         {{ form|crispy }}

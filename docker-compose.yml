@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "2051:2051"
+    volumes:
+      - ./data/db.sqlite3:/app/db.sqlite3
+      - ./mediafiles:/app/mediafiles
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=admin123

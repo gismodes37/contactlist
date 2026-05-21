@@ -7,9 +7,9 @@
     <div class="mt-5">
         <h3>Mis contactos</h3>
 
-        <div class="mt-3 d-flex justify-content-between">
+        <div class="mt-3 d-flex justify-content-between flex-wrap gap-2">
             
-            <form action="" style="max-width: 450px;">
+            <form action="" style="max-width: 450px;" class="d-flex gap-2">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Buscar por nombre" name="q" value="{{ request.GET.q }}">
                     <button class="btn btn-outline-primary">
@@ -18,39 +18,58 @@
                 </div>
             </form>
             
-            <a href="{% url 'contact_new' %}" class="btn btn-outline-primary">
-                Registrar contacto
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{% url 'contact_list' %}?export=csv" class="btn btn-outline-success">
+                    <i class="fas fa-file-csv"></i> Exportar
+                </a>
+                <a href="{% url 'contact_new' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus"></i> Registrar contacto
+                </a>
+            </div>
         </div>
     </div>
 
+    {% if object_list %}
     <div class="table-responsive">
         <table class="mt-5 w-100 table table-sm mx-auto table-hover">
             <thead>
                 <tr class="table-primary">
-                    <th>Nombres</th>
+                    <th></th>
+                    <th><a href="?{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&sort={% if current_sort == 'name' %}-name{% else %}name{% endif %}" class="text-decoration-none text-reset">Nombres {% if current_sort == 'name' %}▲{% elif current_sort == '-name' %}▼{% endif %}</a></th>
                     <th>Celular 1</th>
                     <th>Celular 2</th>
-                    <th>E-mail</th>
-                    <th>F. registro</th>
-                    <th colspan="2"></th>
+                    <th><a href="?{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&sort={% if current_sort == 'email' %}-email{% else %}email{% endif %}" class="text-decoration-none text-reset">E-mail {% if current_sort == 'email' %}▲{% elif current_sort == '-email' %}▼{% endif %}</a></th>
+                    <th><a href="?{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&sort={% if current_sort == 'birth' %}-birth{% else %}birth{% endif %}" class="text-decoration-none text-reset">Cumpleaños {% if current_sort == 'birth' %}▲{% elif current_sort == '-birth' %}▼{% endif %}</a></th>
+                    <th><a href="?{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&sort={% if current_sort == 'created' %}-created{% else %}created{% endif %}" class="text-decoration-none text-reset">F. registro {% if current_sort == 'created' %}▲{% elif current_sort == '-created' %}▼{% endif %}</a></th>
+                    <th colspan="3"></th>
                 </tr>
             </thead>
 
             {% for contact in object_list %}
             <tbody>              
-                <tr>                    
+                <tr>
+                    <td>
+                        {% if contact.avatar %}
+                            <img src="{{ contact.avatar.url }}" alt="{{ contact.name }}" class="rounded-circle" style="width: 35px; height: 35px; object-fit: cover;">
+                        {% else %}
+                            <span class="d-inline-block rounded-circle bg-secondary text-white text-center" style="width: 35px; height: 35px; line-height: 35px; font-size: 14px;">{{ contact.name|first }}</span>
+                        {% endif %}
+                    </td>
                     <td class="fw-bold">{{ contact.name }}</td>
                     <td>{{ contact.phone|default:'-' }}</td>
                     <td>{{ contact.phone2|default:'-' }}</td>
                     <td>{{ contact.email }}</td>
-                    <td>{{ contact.created|date:'d/m/Y h:i A' }}</td>  
+                    <td>{{ contact.birth|date:'d/m/Y'|default:'-' }}</td>
+                    <td>{{ contact.created|date:'d/m/Y h:i A' }}</td>
+                    <td>
+                            <a href="{% url 'contact_detail' contact.pk %}" class="btn btn-outline-info btn-sm" title="Ver detalle"><i class="fas fa-eye"></i></a>
+                    </td>
                     <td>     
-                            <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-outline-warning"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-outline-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
                     </td>
 
                     <td>
-                            <a href="{% url 'contact_delete' contact.pk %}" class="btn btn-outline-danger"><i class="fas fa-trash"></i></a>                    
+                            <a href="{% url 'contact_delete' contact.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar"><i class="fas fa-trash"></i></a>                    
                     </td>
                 </tr>
             </tbody>
@@ -73,7 +92,7 @@
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="{% url 'contact_list' %}?page={{ page_obj.previous_page_number }}"
+                        <a class="page-link" href="{% url 'contact_list' %}?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if current_sort != '-created' %}&sort={{ current_sort }}{% endif %}"
                            aria-label="Anterior">
                             <span aria-hidden="true">
                                 <<
@@ -92,7 +111,7 @@
     
                 {% for page in page_obj.adjusted_elided_pages %}
                     <li class="page-item {% if page_obj.number == page %}active{% endif %}">
-                        <a class="page-link" href="{% url 'contact_list' %}?page={{ page }}">
+                        <a class="page-link" href="{% url 'contact_list' %}?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if current_sort != '-created' %}&sort={{ current_sort }}{% endif %}">
                             {{ page }}
                         </a>
                     </li>
@@ -100,7 +119,7 @@
     
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="{% url 'contact_list' %}?page={{ page_obj.next_page_number }}"
+                        <a class="page-link" href="{% url 'contact_list' %}?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if current_sort != '-created' %}&sort={{ current_sort }}{% endif %}"
                            aria-label="Siguiente">
                             <span aria-hidden="true">
                                 >>
@@ -119,4 +138,10 @@
             </ul>
         </nav>
     </div>
+    {% else %}
+        <div class="text-center mt-5">
+            <p class="text-muted">No hay contactos registrados.</p>
+            <a href="{% url 'contact_new' %}" class="btn btn-primary">Crear primer contacto</a>
+        </div>
+    {% endif %}
 {% endblock content %}
